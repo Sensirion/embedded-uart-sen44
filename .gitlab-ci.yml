@@ -34,12 +34,6 @@ test:
   tags: [mso-sw-testbed-2]
   script:
     - cd tests/
-    - make test
-
-TODO_check:
-  stage: validate
-  image:
-      name: registry.gitlab.sensirion.lokal/mso-sw/drivers/docker-driver-generator:0.1.0
-  tags: [linux, docker]
-  script:
-    - '! grep -rnw --exclude=.gitlab-ci.yml --exclude-dir=.git . -e "TODO: DRIVER_GENERATOR"'
+    - make
+# TODO There is no SEN44 attached to the testbed yet
+#    -  make test
