@@ -45,8 +45,6 @@
  */
 //#define printf(...)
 
-// TODO: DRIVER_GENERATOR Add missing commands and make prints more pretty
-
 int main(void) {
     int16_t error = 0;
 
@@ -54,6 +52,11 @@ int main(void) {
     if (error) {
         printf("Error initializing UART: %i\n", error);
         return error;
+    }
+
+    error = sen44_device_reset();
+    if (error) {
+        printf("Error executing sen44_device_reset(): %i\n", error);
     }
 
     unsigned char serial_number[255];
@@ -82,13 +85,12 @@ int main(void) {
     if (error) {
         printf("Error executing sen44_get_version(): %i\n", error);
     } else {
-        printf("Firmware major: %u\n", firmware_major);
-        printf("Firmware minor: %u\n", firmware_minor);
-        printf("Firmware debug: %i\n", firmware_debug);
-        printf("Hardware major: %u\n", hardware_major);
-        printf("Hardware minor: %u\n", hardware_minor);
-        printf("Protocol major: %u\n", protocol_major);
-        printf("Protocol minor: %u\n", protocol_minor);
+        if (firmware_debug) {
+            printf("Development firmware version: ");
+        }
+        printf("Firmware: %u.%u, Hardware: %u.%u, protocol: %u.%u\n",
+               firmware_major, firmware_minor, hardware_major, hardware_minor,
+               protocol_major, protocol_minor);
     }
 
     // Start Measurement
@@ -101,10 +103,7 @@ int main(void) {
 
     for (;;) {
         // Read Measurement
-        // TODO: DRIVER_GENERATOR check and update measurement interval
         sensirion_uart_hal_sleep_usec(1000000);
-        // TODO: DRIVER_GENERATOR Add scale and offset to printed measurement
-        // values
 
         uint16_t mass_concentration_pm1p0;
         uint16_t mass_concentration_pm2p5;
@@ -130,9 +129,10 @@ int main(void) {
             printf("Mass concentration pm4p0: %u\n", mass_concentration_pm4p0);
             printf("Mass concentration pm10p0: %u\n",
                    mass_concentration_pm10p0);
-            printf("Voc index: %i\n", voc_index);
-            printf("Ambient humidity: %i\n", ambient_humidity);
-            printf("Ambient temperature: %i\n", ambient_temperature);
+            printf("Voc index: %.1f\n", voc_index / 10.0f);
+            printf("Ambient humidity: %.2f%%RH\n", ambient_humidity / 100.0f);
+            printf("Ambient temperature: %.2f°C\n",
+                   ambient_temperature / 200.0f);
         }
     }
 
