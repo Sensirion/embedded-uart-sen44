@@ -44,11 +44,6 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-// TODO: DRIVER_GENERATOR Remove commands which shouldn't be tested
-// TODO: DRIVER_GENERATOR Adjust setup and teardown
-// TODO: DRIVER_GENERATOR Adjust all tests such that pre- and post conditions
-// are met
-
 TEST_GROUP (SEN44_Tests) {
     void setup() {
         int16_t error;
@@ -72,10 +67,21 @@ TEST (SEN44_Tests, SEN44_Test_start_measurement) {
     int16_t error;
     error = sen44_start_measurement();
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_TEXT(error, SENSIRION_SHDLC_ERR_EXECUTION_FAILURE,
+                     "repeated start should fail");
 }
 
 TEST (SEN44_Tests, SEN44_Test_stop_measurement) {
     int16_t error;
+    error = sen44_stop_measurement();
+    CHECK_EQUAL_TEXT(error, SENSIRION_SHDLC_ERR_EXECUTION_FAILURE,
+                     "stop measurement after reset should fail");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
     error = sen44_stop_measurement();
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_stop_measurement");
 }
@@ -85,7 +91,18 @@ TEST (SEN44_Tests, SEN44_Test_read_data_ready) {
     bool data_ready;
     error = sen44_read_data_ready(&data_ready);
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_read_data_ready");
-    printf("Data ready: %i\n", data_ready);
+    CHECK_EQUAL_TEXT(data_ready, false,
+                     "data ready should be false after reset");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
+    sensirion_uart_hal_sleep_usec(1100000);
+
+    error = sen44_read_data_ready(&data_ready);
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_read_data_ready");
+    CHECK_EQUAL_TEXT(data_ready, true,
+                     "data ready should be true after measurement");
 }
 
 TEST (SEN44_Tests, SEN44_Test_read_measured_pm_values) {
@@ -100,6 +117,20 @@ TEST (SEN44_Tests, SEN44_Test_read_measured_pm_values) {
     uint16_t number_concentration_pm4p0;
     uint16_t number_concentration_pm10p0;
     uint16_t typical_particle_size;
+    error = sen44_read_measured_pm_values(
+        &mass_concentration_pm1p0, &mass_concentration_pm2p5,
+        &mass_concentration_pm4p0, &mass_concentration_pm10p0,
+        &number_concentration_pm0p5, &number_concentration_pm1p0,
+        &number_concentration_pm2p5, &number_concentration_pm4p0,
+        &number_concentration_pm10p0, &typical_particle_size);
+    CHECK_EQUAL_TEXT(error, SENSIRION_SHDLC_ERR_EXECUTION_FAILURE,
+                     "read measurement after reset should fail");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
+    sensirion_uart_hal_sleep_usec(1100000);
+
     error = sen44_read_measured_pm_values(
         &mass_concentration_pm1p0, &mass_concentration_pm2p5,
         &mass_concentration_pm4p0, &mass_concentration_pm10p0,
@@ -133,6 +164,18 @@ TEST (SEN44_Tests,
         &mass_concentration_pm1p0, &mass_concentration_pm2p5,
         &mass_concentration_pm4p0, &mass_concentration_pm10p0, &voc_index,
         &ambient_humidity, &ambient_temperature);
+    CHECK_EQUAL_TEXT(error, SENSIRION_SHDLC_ERR_EXECUTION_FAILURE,
+                     "read measurement after reset should fail");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
+    sensirion_uart_hal_sleep_usec(1100000);
+
+    error = sen44_read_measured_mass_concentration_and_ambient_values(
+        &mass_concentration_pm1p0, &mass_concentration_pm2p5,
+        &mass_concentration_pm4p0, &mass_concentration_pm10p0, &voc_index,
+        &ambient_humidity, &ambient_temperature);
     CHECK_EQUAL_ZERO_TEXT(
         error, "sen44_read_measured_mass_concentration_and_ambient_values");
     printf("Mass concentration pm1p0: %u\n", mass_concentration_pm1p0);
@@ -151,6 +194,16 @@ TEST (SEN44_Tests, SEN44_Test_read_measured_ambient_values) {
     int16_t ambient_temperature;
     error = sen44_read_measured_ambient_values(&voc_index, &ambient_humidity,
                                                &ambient_temperature);
+    CHECK_EQUAL_TEXT(error, SENSIRION_SHDLC_ERR_EXECUTION_FAILURE,
+                     "read measurement after reset should fail");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
+    sensirion_uart_hal_sleep_usec(1100000);
+
+    error = sen44_read_measured_ambient_values(&voc_index, &ambient_humidity,
+                                               &ambient_temperature);
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_read_measured_ambient_values");
     printf("Voc index: %i\n", voc_index);
     printf("Ambient humidity: %i\n", ambient_humidity);
@@ -159,6 +212,13 @@ TEST (SEN44_Tests, SEN44_Test_read_measured_ambient_values) {
 
 TEST (SEN44_Tests, SEN44_Test_start_fan_cleaning) {
     int16_t error;
+    error = sen44_start_fan_cleaning();
+    CHECK_EQUAL_TEXT(error, SENSIRION_SHDLC_ERR_EXECUTION_FAILURE,
+                     "start fan cleaning after reset should fail");
+
+    error = sen44_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_measurement");
+
     error = sen44_start_fan_cleaning();
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_start_fan_cleaning");
 }
@@ -175,7 +235,7 @@ TEST (SEN44_Tests, SEN44_Test_get_auto_cleaning_interval) {
     uint32_t interval;
     error = sen44_get_auto_cleaning_interval(&interval);
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_get_auto_cleaning_interval");
-    printf("Interval: %u\n", interval);
+    printf("interval: %u\n", interval);
 }
 
 TEST (SEN44_Tests, SEN44_Test_get_article_code) {
@@ -209,13 +269,10 @@ TEST (SEN44_Tests, SEN44_Test_get_version) {
                               &hardware_major, &hardware_minor, &protocol_major,
                               &protocol_minor);
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_get_version");
-    printf("Firmware major: %u\n", firmware_major);
-    printf("Firmware minor: %u\n", firmware_minor);
-    printf("Firmware debug: %i\n", firmware_debug);
-    printf("Hardware major: %u\n", hardware_major);
-    printf("Hardware minor: %u\n", hardware_minor);
-    printf("Protocol major: %u\n", protocol_major);
-    printf("Protocol minor: %u\n", protocol_minor);
+    printf("Firmware: %u.%u\n", firmware_major, firmware_minor);
+    printf("Firmware debug: %s\n", firmware_debug ? "true" : "false");
+    printf("Hardware: %u.%u\n", hardware_major, hardware_minor);
+    printf("Protocol: %u.%u\n", protocol_major, protocol_minor);
 }
 
 TEST (SEN44_Tests, SEN44_Test_read_device_status) {
@@ -225,8 +282,8 @@ TEST (SEN44_Tests, SEN44_Test_read_device_status) {
     uint8_t last_error;
     error = sen44_read_device_status(clear, &device_status, &last_error);
     CHECK_EQUAL_ZERO_TEXT(error, "sen44_read_device_status");
-    printf("Device status: %u\n", device_status);
-    printf("Last error: %u\n", last_error);
+    printf("device_status: %u\n", device_status);
+    printf("last_error: %u\n", last_error);
 }
 
 TEST (SEN44_Tests, SEN44_Test_device_reset) {
