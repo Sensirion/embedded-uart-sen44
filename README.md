@@ -1,3 +1,9 @@
+# Sensirion Embedded UART SEN44 Driver
+
+This is a generic embedded driver for the Sensirion SEN44 sensor. It enables
+developers to communicate with the SEN44 sensor on different hardware platforms
+by only adapting the UART communication related source files.
+
 # Getting started
 
 ## Implement the UART Interface
