@@ -1,7 +1,7 @@
 # Sensirion Embedded UART SEN44 Driver
 
-This is a generic embedded driver for the Sensirion SEN44 sensor. It enables
-developers to communicate with the SEN44 sensor on different hardware platforms
+This is a generic embedded driver for the Sensirion SEN44 sensor module. It enables
+developers to communicate with the SEN44 sensor module on different hardware platforms
 by only adapting the UART communication related source files.
 
 # Getting started
@@ -60,7 +60,7 @@ Here we demonstrate the procedure for Linux based platforms:
 1. Open up a terminal.
 2. Navigate to the directory where this README is located.
 3. Run `make` (this compiles the example code into one executable binary).
-4. Run the compiled executable with `./[SENSORNAME]_uart_example_usage`
+4. Run the compiled executable with `./sen44_uart_example_usage`
 5. Now you should see the first measurement values appear in your terminal. As
    a next step you can adjust the example usage file or write your own main
    function to use the sensor.
