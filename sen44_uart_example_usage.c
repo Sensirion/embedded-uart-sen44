@@ -40,10 +40,10 @@
 #include "sensirion_common.h"
 #include "sensirion_uart_hal.h"
 
-/**
- * TO USE CONSOLE OUTPUT (PRINTF) AND PLATFORM
+/* TO USE CONSOLE OUTPUT (printf) YOU MAY NEED TO ADAPT THE
+ * INCLUDE ABOVE OR DEFINE IT ACCORDING TO YOUR PLATFORM.
+ * #define printf(...)
  */
-//#define printf(...)
 
 int main(void) {
     int16_t error = 0;
