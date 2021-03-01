@@ -130,7 +130,7 @@ int16_t sen44_read_measured_pm_values(
         return error;
     }
 
-    sensirion_uart_hal_sleep_usec(10000);
+    sensirion_uart_hal_sleep_usec(20000);
 
     error = sensirion_shdlc_rx_inplace(&frame, 20, &header);
     if (error) {
@@ -172,7 +172,7 @@ int16_t sen44_read_measured_mass_concentration_and_ambient_values(
         return error;
     }
 
-    sensirion_uart_hal_sleep_usec(10000);
+    sensirion_uart_hal_sleep_usec(20000);
 
     error = sensirion_shdlc_rx_inplace(&frame, 14, &header);
     if (error) {
@@ -204,7 +204,7 @@ int16_t sen44_read_measured_ambient_values(int16_t* voc_index,
         return error;
     }
 
-    sensirion_uart_hal_sleep_usec(10000);
+    sensirion_uart_hal_sleep_usec(20000);
 
     error = sensirion_shdlc_rx_inplace(&frame, 6, &header);
     if (error) {
