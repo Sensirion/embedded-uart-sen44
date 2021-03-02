@@ -59,8 +59,8 @@ int main(void) {
         printf("Error executing sen44_device_reset(): %i\n", error);
     }
 
-    unsigned char serial_number[255];
-    uint8_t serial_number_size = 255;
+    unsigned char serial_number[32];
+    uint8_t serial_number_size = 32;
 
     error = sen44_get_serial_number(serial_number, serial_number_size);
 
