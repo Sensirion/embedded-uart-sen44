@@ -4,7 +4,27 @@ This is a generic embedded driver for the Sensirion SEN44 sensor module. It enab
 developers to communicate with the SEN44 sensor module on different hardware platforms
 by only adapting the UART communication related source files.
 
+<center><img src="images/SEN4x.png" width="500px"></center>
+
 # Getting started
+
+## Connecting the Sensor
+
+Your sensor has the four different connectors: VCC, GND, SDA, SCL, SEL (the sixth connector will not be used for now).
+
+<center><img src="images/SEN44_pinout.png" width="300px"></center>
+
+| *Pin* | *Name* | *Description* | *Comments* |
+|-------|--------|---------------|------------|
+| 1     | VDD    | Supply Voltage | 5V ±10%
+| 2     | GND    | Ground |
+| 3     | RX     | UART: Receiving pin for communication | TTL 5V and LVTTL 3.3V compatible
+|       | SDA    | I2C: Serial data input / output | TTL 5V and LVTTL 3.3V compatible
+| 4     | TX     | UART: Transmission pin for communication | TTL 5V and LVTTL 3.3V compatible
+|       | SCL    | I2C: Serial clock input | TTL 5V and LVTTL 3.3V compatible
+| 5     | SEL    | Interface select | Leave floating or pull to VDD to select UART
+|       |        |  | Pull to GND to select I2C
+| 6     | NC     | Do not connect |
 
 ## Implement the UART Interface
 
